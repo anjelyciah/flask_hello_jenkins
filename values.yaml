@@ -1,0 +1,51 @@
+controller:
+  admin:
+    user: admin
+    password: admin123
+
+  installPlugins:
+    - kubernetes
+    - workflow-aggregator
+    - git
+    - configuration-as-code
+    - blueocean
+    - credentials-binding
+    - docker-workflow
+
+  service:
+    type: NodePort
+    nodePort: 32000
+
+  ingress:
+    enabled: false
+
+  jenkinsUrl: http://192.168.49.2:32000
+
+  # Activer la configuration-as-code (CASC)
+  JCasC:
+    enabled: true
+    defaultConfig: true
+    configScripts:
+      welcome-message: |
+        jenkins:
+          systemMessage: "Bienvenue dans Jenkins sur Minikube - déployé avec Helm !"
+
+  javaOpts: >-
+    -Djavax.net.ssl.keyStore=/var/jenkins_keystore/jenkins.jks
+    -Djavax.net.ssl.keyStorePassword=admin123
+    -Djavax.net.ssl.keyStoreType=JKS
+
+  extraVolumes:
+    - name: jenkins-keystore
+      secret:
+        secretName: jenkins-keystore
+
+  extraVolumeMounts:
+    - name: jenkins-keystore
+      mountPath: /var/jenkins_keystore
+      readOnly: true
+
+persistence:
+  enabled: true
+  size: 4Gi
+  storageClass: standard
